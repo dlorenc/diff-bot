@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: diff-comment-pipeline
+spec:
+  resources:
+  - name: source-repo
+    type: git
+  - name: base-image
+    type: image
+  - name: diff-image
+    type: image
+  - name: pr
+    type: pullRequest
+  params:
+  - name: dockerfile
+    type: string
+  tasks:
+  - name: build-image
+    taskRef:
+      name: buildkit-daemonless
+    params:
+    - name: dockerfile
+      value: $(inputs.params.dockerfile)
+    resources:
+      inputs:
+      - name: source-repo
+        resource: source-repo
+      outputs:
+      - name: diff-image
+        resource: diff-image
+  - name: diff                 # 2.  check file exists
+    taskRef:
+      name: container-diff
+    resources:
+      inputs:
+      - name: image1
+        resource: base-image
+      - name: image2
+        resource: diff-image
+        from: [build-image]
+      - name: pr
+        resource: source-repo
+      outputs:
+      - name: pr
+        resource: pr

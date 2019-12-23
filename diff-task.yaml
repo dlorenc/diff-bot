@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: container-diff
+spec:
+  inputs:
+    resources:
+    - name: image1
+      type: image
+    - name: image2
+      type: image
+    - name: pr
+      type: pullRequest
+  outputs:
+    resources:
+    - name: pr
+      type: pullRequest
+  steps:
+  - image: gcr.io/dlorenc-vmtest2/container-diff
+    script: |
+      #!/bin/bash
+      set -ex
+      cp -r /workspace/pr/ /workspace/output/
+      diff=$(container-diff diff $(inputs.resources.image1) $(inputs.params.image2))
+      echo $diff
+      echo $diff > /workspace/output/pr/comments/new
