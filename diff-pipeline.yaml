@@ -20,14 +20,14 @@ spec:
     taskRef:
       name: buildkit-daemonless
     params:
-    - name: dockerfile
+    - name: DOCKERFILE
       value: $(inputs.params.dockerfile)
     resources:
       inputs:
-      - name: source-repo
+      - name: source
         resource: source-repo
       outputs:
-      - name: diff-image
+      - name: image
         resource: diff-image
   - name: diff                 # 2.  check file exists
     taskRef:

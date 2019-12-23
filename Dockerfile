@@ -1,2 +1,2 @@
 FROM ubuntu
-RUN apt-get update && apt-get install curl -yq
+RUN apt-get update && apt-get install curl jq -yq
